@@ -49,7 +49,7 @@ public class AnalysisService {
         LazyHolder.CLIENT.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                // убраны логеры
+                // убраны логеры, я думаю они вам и не нужны в этом классе :) 
             }
 
             @Override
