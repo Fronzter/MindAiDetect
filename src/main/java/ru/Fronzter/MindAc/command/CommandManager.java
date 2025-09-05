@@ -56,7 +56,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     private void sendHelpMessage(CommandSender sender) {
         sender.sendMessage("§b>>> MindAI Help <<<");
         for (SubCommand subCommand : subCommands.values()) {
-            sender.sendMessage("&6" + subCommand.getUsage() + "&f - " + subCommand.getDescription());
+            sender.sendMessage("§6" + subCommand.getUsage() + "§f - " + subCommand.getDescription()); // параграфик для красоты
         }
     }
 
