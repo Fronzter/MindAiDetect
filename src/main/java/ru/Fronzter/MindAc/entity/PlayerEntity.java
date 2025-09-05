@@ -2,6 +2,10 @@ package ru.Fronzter.MindAc.entity;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.scheduler.BukkitTask;
+import ru.Fronzter.MindAc.MindAI;
+import ru.Fronzter.MindAc.service.AnalysisService;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,20 +19,38 @@ public final class PlayerEntity {
 
     private float lastYaw = 0.0F;
     private float lastPitch = 0.0F;
-    private final List<Frame> mlFrames = new LinkedList<>();
+    private final List<Frame> frames = new LinkedList<>();
     private List<Frame> lastAnalyzedFrames = null;
 
     private volatile boolean isProcessingFlag = false;
-
-    public UUID getUUID() {
-        return this.uuid;
-    }
+    private long combatTagUntil = 0L;
+    private BukkitTask postCombatAnalysisTask = null;
 
     public void setLastAnalyzedFrames(List<Frame> frames) {
         this.lastAnalyzedFrames = new ArrayList<>(frames);
     }
 
-    public List<Frame> getFrames() {
-        return this.mlFrames;
+    public boolean isInCombat() {
+        return System.currentTimeMillis() < combatTagUntil;
+    }
+
+    public void tagCombat(long durationTicks) {
+        this.combatTagUntil = System.currentTimeMillis() + (durationTicks * 50);
+
+        if (postCombatAnalysisTask != null) {
+            postCombatAnalysisTask.cancel();
+        }
+
+        postCombatAnalysisTask = MindAI.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(
+                MindAI.getInstance(),
+                () -> {
+                    int framesToAnalyze = MindAI.getInstance().getConfig().getInt("ml-check.frames-to-analyze", 150);
+                    if (this.getFrames().size() >= framesToAnalyze) {
+                        AnalysisService.analyze(this);
+                    }
+                    this.getFrames().clear();
+                },
+                durationTicks
+        );
     }
 }

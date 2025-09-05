@@ -3,17 +3,15 @@ version: 1.0
 main: ru.Fronzter.MindAc.MindAI
 api-version: 1.13
 author: Fronzter
+website: www.mind-ai.tech
 permissions:
   mindai.alerts:
-    description: Разрешает получать оповещения от системы анализа
     default: op
   mindai.admin:
-    description: Разрешает использовать административные команды плагина
     default: op
 
 commands:
   mindai:
-    description: Основная команда плагина MindAI
     aliases: [mac]
     permission: mindai.admin
-    usage: "/<command> [reload|alerts|history]"
+    usage: "/<command> [reload|alerts|history|punish]"

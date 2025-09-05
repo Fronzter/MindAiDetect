@@ -1,0 +1,27 @@
+# Сообщения на русском языке для MindAI
+no-permission: "&cУ вас нет прав для использования этой команды."
+player-only-command: "&cЭту команду может использовать только игрок."
+unknown-subcommand: "&cНеизвестная подкоманда. Используйте /mindai для помощи."
+player-not-found: "&cИгрок с ником '%player%' никогда не играл на сервере."
+
+alerts:
+  message: "&8[&3MindAI&8] &f%player% &bподозревается в читерстве &8(&3%probability% | VL: %vl%&8)"
+  toggled-on: "&aОповещения от MindAI включены."
+  toggled-off: "&cОповещения от MindAI выключены."
+
+commands:
+  reload:
+    success: "&aКонфигурация и языковой файл MindAI успешно перезагружены."
+  history:
+    usage: "&cИспользование: /mindai history <игрок>"
+    loading: "&3Загрузка истории для %player%..."
+    no-history: "&aУ игрока %player% нет зафиксированных нарушений."
+    header: "&8>><< &3История нарушений для %player% &8>><<"
+    entry: "&f%date% &8- &3%probability%"
+  stats:
+    usage: "&cИспользование: /mindai stats <игрок>"
+    loading: "&3Загрузка статистики для %player%..."
+    header: "&8>><< &3Статистика для %player% &8>><<"
+    total-violations: "&3Всего нарушений в базе: &f%count%"
+    average-probability: "&3Средняя вероятность: &f%avg_prob%%"
+    last-violation: "&3Последнее нарушение: &f%date%"

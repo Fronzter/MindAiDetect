@@ -1,0 +1,27 @@
+# English messages for MindAI
+no-permission: "&cYou don't have permission to use this command."
+player-only-command: "&cThis command can only be used by a player."
+unknown-subcommand: "&cUnknown subcommand. Use /mindai for help."
+player-not-found: "&cPlayer '%player%' has never played on this server."
+
+alerts:
+  message: "&8[&3MindAI&8] &f%player% &bis suspected of cheating &8(&3%probability% | VL: %vl%&8)"
+  toggled-on: "&aMindAI alerts have been enabled."
+  toggled-off: "&cMindAI alerts have been disabled."
+
+commands:
+  reload:
+    success: "&aMindAI configuration and language file have been successfully reloaded."
+  history:
+    usage: "&cUsage: /mindai history <player>"
+    loading: "&3Loading history for %player%..."
+    no-history: "&aPlayer %player% has no recorded violations."
+    header: "&8>><< &3Violation History for %player% &8>><<"
+    entry: "&f%date% &8- &3%probability%"
+  stats:
+    usage: "&cUsage: /mindai stats <player>"
+    loading: "&3Loading statistics for %player%..."
+    header: "&8>><< &3Statistics for %player% &8>><<"
+    total-violations: "&3Total violations in database: &f%count%"
+    average-probability: "&3Average probability: &f%avg_prob%%"
+    last-violation: "&3Last violation: &f%date%"

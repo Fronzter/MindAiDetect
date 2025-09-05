@@ -4,6 +4,7 @@ import com.github.retrooper.packetevents.event.PacketListenerAbstract;
 import com.github.retrooper.packetevents.event.UserDisconnectEvent;
 import com.github.retrooper.packetevents.event.UserLoginEvent;
 import com.github.retrooper.packetevents.protocol.player.User;
+import ru.Fronzter.MindAc.MindAI;
 import ru.Fronzter.MindAc.entity.PlayerEntity;
 import ru.Fronzter.MindAc.registry.PlayerRegistry;
 
@@ -23,6 +24,7 @@ public class ConnectionListener extends PacketListenerAbstract {
         User user = event.getUser();
         if (user != null && user.getUUID() != null) {
             PlayerRegistry.removePlayer(user.getUUID());
+            MindAI.getInstance().getViolationManager().clearPlayerData(user.getUUID());
         }
     }
 }

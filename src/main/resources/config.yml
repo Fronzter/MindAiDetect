@@ -1,45 +1,174 @@
-# Ваш уникальный API-ключ. Telegram @Fronzter Website www.mind-ai.tech
-api-key: "key-ai"
+#                      Конфигурация MindAI
+#           По всем вопросам и за получением ключа: Telegram @Fronzter
+#                        Website: www.mind-ai.tech
+
+# Язык, используемый для всех сообщений плагина.
+# The language used for all plugin messages.
+#
+# Доступные по умолчанию / Default languages: en, ru.
+# Плагин автоматически создаст файл lang_<en/ru>.yml в своей папке.
+language: "en"
+
+# Ваш уникальный API-ключ. ОБЯЗАТЕЛЬНО ЗАМЕНИТЕ НА СВОЙ.
+# Your unique API key. YOU MUST CHANGE THIS.
+#
+# Без действующего ключа плагин не будет работать.
+# The plugin will not work without a valid key.
+api-key: "YOUR-API-KEY"
 
 api-endpoints:
   license-server: "http://license.mind-ai.tech"
   analysis-server: "http://api.mind-ai.tech"
 
-# Настройки модуля машинного обучения (ML)
+#              Настройки модуля машинного обучения (ML)
+#              Machine Learning (ML) Module Settings
 ml-check:
+  # Включить/выключить основной модуль анализа?
+  # Enable/disable the main analysis module?
   enabled: true
-  frames-to-analyze: 150 # Не менять!
-  # Порог уверенности. Рекомендуется 0.80-0.95 для уменьшения ложных срабатываний.
+
+  # Количество кадров, отправляемых на анализ. !!! НЕ МЕНЯТЬ !!!
+  # Number of "frames" sent for analysis. !!! DO NOT CHANGE !!!
+  frames-to-analyze: 150
+
+  # Порог уверенности модели ИИ для фиксации нарушения (0.0 - 1.0).
+  # The AI model's confidence threshold to flag a violation (0.0 - 1.0).
   classification-threshold: 0.80
 
-  # Сколько VL добавляется за один флаг от античита.
+  # Количество очков нарушений (VL), добавляемое за одно срабатывание.
+  # Amount of Violation Level (VL) points added per flag.
   vl-increment: 0.5
 
-  # Порог VL, при достижении которого игрок будет наказан.
-  violation-threshold: 2
+  # Порог VL для наказания (используется ТОЛЬКО для режимов 'INSTANT' и 'ANIMATED').
+  # VL threshold for punishment (used ONLY for 'INSTANT' and 'ANIMATED' modes).
+  violation-threshold: 7
 
-  # Время жизни одного флага в секундах.
-  # Через это время 1 флаг (vl-increment) полностью исчезнет. (600 = 10 минут)
-  # VL будет уменьшаться постепенно в течение этого времени.
+  # "Окно" жизни одного флага в секундах. VL от флага плавно исчезнет за это время.
+  # The "window" of a flag's lifetime in seconds. VL from a flag will gradually decay over this time.
   window: 600
 
-# Настройки оповещений для администрации
+  # Запись движений мыши.
+  # Recording mouse movements
+  combat-timer-seconds: 10
+
+#                   Настройки оповещений (Alerts)
 alerts:
+  # Включить оповещения для администрации?
+  # Enable alerts for administrators?
   enabled: true
+  # Право, необходимое для получения оповещений.
+  # Permission required to receive alerts.
   permission: "mindai.alerts"
-  # Формат сообщения. %vl% теперь будет показывать текущий VL и порог (например, 6.6/7) раньше было обычно 1/1 типо
-  message: "&8[&3MindAI&8] &f%player% &bподозревается в читерстве &8(&3%probability% | VL: %vl%&8)"
 
-# АВТОМАТИЧЕСКОЕ НАКАЗАНИЕ (при достижении VL)
+#                   Автоматические наказания
+#                       Automatic Punishments
 auto-punishment:
-  # Режим автоматического наказания: INSTANT, ANIMATED, ALERTS_ONLY
-  # INSTANT это без анимки бан ANIMATED анимка ALERTS_ONLY просто алерты
-  mode: INSTANT
-  # Команда, которая будет выполнена, если выбран режим INSTANT
-  command: "ban %player% Ваш аккаунт был заблокирован системой MindAi за нарушение правил."
+  # Режим автоматического наказания. Выберите один:
+  # Punishment mode. Choose one:
+  #
+  #   INSTANT     - Мгновенное наказание. Выполняет команду, указанную ниже.
+  #                 Instant punishment. Executes the command specified below.
+  #
+  #   ANIMATED    - Наказание с анимацией. Выполняет команду из секции 'punishment-animation'.
+  #                 Punishment with animation. Executes the command from the 'punishment-animation' section.
+  #
+  #   PROGRESSIVE - Прогрессивные наказания. Использует несколько порогов и команд из секции 'progressive-punishment'.
+  #                 Progressive punishments. Uses multiple thresholds and commands from the 'progressive-punishment' section.
+  #
+  #   ALERTS_ONLY - Только оповещения. Не наказывает игроков автоматически.
+  #                 Alerts only. Does not punish players automatically.
+  mode: PROGRESSIVE
 
-# АНИМАЦИЯ НАКАЗАНИЯ (для /mindai punish и режима ANIMATED)
+  # Команда, которая выполняется ТОЛЬКО для режима 'INSTANT'.
+  # Command executed ONLY for the 'INSTANT' mode.
+  command: "ban %player% Your account has been blocked by the MindAI system."
+
+# Настройки для режима 'PROGRESSIVE'
+# Settings for 'PROGRESSIVE' mode
+progressive-punishment:
+  # Сбрасывать ли VL до 0 после наказания?
+  # Reset VL to 0 after punishment?
+  reset-vl-after-punishment: true
+  # Список шагов наказания. Должны идти по возрастанию порога (threshold).
+  # List of punishment steps. Must be in increasing order of threshold.
+  steps:
+    - threshold: 3
+      command: "mindai punish %player%"
+    - threshold: 5
+      command: "tempban %player% 1h &cCHEAT LOL"
+    - threshold: 8
+      command: "tempban %player% 1d &cCHEAT LOL"
+    - threshold: 10
+      command: "ban %player% &cCHEAT LOL"
+
+#                      Система митигаций (Mitigations)
+mitigations:
+  # Включить систему митигаций? Митигации - это активное противодействие читам.
+  # Enable the mitigation system? Mitigations are active countermeasures against cheats.
+  enabled: true
+
+  # Настройки активации / Activation Settings
+  activation:
+    # Режим активации митигаций. Выберите один:
+    # Mitigation activation mode. Choose one:
+    #
+    #   VL_THRESHOLD   - По достижению фиксированного порога VL.
+    #                    Activates upon reaching a fixed VL threshold.
+    #
+    #   SCALING_CHANCE - Шанс активации плавно растет вместе с VL. (РЕКОМЕНДУЕТСЯ)
+    #                    Activation chance scales up with the player's VL. (RECOMMENDED)
+    #
+    #   FLAG_STREAK    - Активация после серии быстрых флагов. Для отлова явных нарушителей.
+    #                    Activates after a quick series of flags. For catching blatant cheaters.
+    mode: SCALING_CHANCE
+
+    # Настройки для режима 'VL_THRESHOLD'
+    threshold:
+      vl: 4.0
+    # Настройки для режима 'SCALING_CHANCE'
+    scaling-chance:
+      min-vl: 3.0 # VL, при котором появляется ПЕРВЫЙ шанс активации. / VL at which the FIRST chance of activation appears.
+      max-vl: 8.0 # VL, при котором шанс активации становится 100%. / VL at which the activation chance becomes 100%.
+    # Настройки для режима 'FLAG_STREAK'
+    flag-streak:
+      flags-needed: 3 # Сколько флагов подряд нужно для активации. / How many consecutive flags are needed.
+      time-window-seconds: 20 # Временное окно для этих флагов (в сек). / Time window for these flags (in sec).
+
+  # Длительность митигаций / Mitigations Duration
+  # Сколько секунд митигации будут активны ПОСЛЕ ПОСЛЕДНЕГО флага.
+  # Новый флаг сбрасывает таймер. Установите -1, чтобы отключить таймер.
+  # How many seconds mitigations will remain active AFTER THE LAST flag.
+  # A new flag resets the timer. Set to -1 to disable the timer.
+  duration-seconds: 15
+
+  # Типы митигаций / Mitigation Types
+  types:
+    # "Призрачные попадания": Периодически отменяет урон от атак.
+    # "Ghost Hits": Periodically cancels damage from attacks.
+    ghost-hits:
+      enabled: true
+      chance: 0.25 # Шанс отмены атаки (0.0 - 1.0). / Chance to cancel an attack (0.0 - 1.0).
+    # "Сдвиг прицела": Принудительно сбивает прицел в момент атаки.
+    # "Aim Punch": Forcibly knocks the aim off-target during an attack.
+    aim-punch:
+      enabled: true
+      horizontal-strength: 3.0 # Сила сдвига по горизонтали (в градусах). / Horizontal punch strength (in degrees).
+      vertical-strength: 1.5   # Сила сдвига по вертикали (в градусах). / Vertical punch strength (in degrees).
+    # "Урезание урона": Уменьшает наносимый урон.
+    # "Damage Reduction": Reduces outgoing damage.
+    damage-reduction:
+      enabled: true
+      multiplier: 0.7 # Множитель урона. 0.7 = 70% от обычного урона. / Damage multiplier. 0.7 = 70% of normal damage.
+    # "Отмена прыжка": Мешает игроку прыгать.
+    # "Jump Cancellation": Hinders jumping.
+    jump-cancel:
+      enabled: true
+      chance: 0.8 # Шанс применения при прыжке. / Chance to apply on jump.
+      downward-force: -0.2 # Сила, с которой игрока тянет вниз. / The force pulling the player down.
+
 punishment-animation:
+  # Используется для команды /mindai punish и для режима 'ANIMATED'.
+  # Used for the /mindai punish command and for the 'ANIMATED' mode.
   enabled: true
   duration: 5
   levitation-strength: 1
@@ -52,5 +181,6 @@ punishment-animation:
   sounds:
     start-sound: ENTITY_EVOKER_PREPARE_SUMMON
     end-sound: ENTITY_WITHER_DEATH
-  # Команда, которая будет выполнена В КОНЦЕ АНИМАЦИИ
-  command: "kick %player% &fВы были изгнаны силой эй ай"
+  # Команда в КОНЦЕ анимации.
+  # Command at the END of the animation.
+  command: "kick %player% &fDETECT HAHAHA"

@@ -10,7 +10,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.Fronzter.MindAc.command.CommandManager;
 import ru.Fronzter.MindAc.listener.ConnectionListener;
+import ru.Fronzter.MindAc.listener.MitigationListener;
 import ru.Fronzter.MindAc.listener.PacketListener;
+import ru.Fronzter.MindAc.manager.LocaleManager;
+import ru.Fronzter.MindAc.mitigation.MitigationManager;
 import ru.Fronzter.MindAc.service.DatabaseService;
 import ru.Fronzter.MindAc.service.HeartbeatService;
 import ru.Fronzter.MindAc.service.ViolationManager;
@@ -31,11 +34,15 @@ public final class MindAI extends JavaPlugin {
     private DatabaseService databaseService;
     private OkHttpClient httpClient;
     private ViolationManager violationManager;
+    private LocaleManager localeManager;
+    private MitigationManager mitigationManager;
 
     @Override
     public void onEnable() {
         instance = this;
         saveDefaultConfig();
+
+        this.localeManager = new LocaleManager(this);
 
         this.httpClient = new OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)
@@ -47,6 +54,7 @@ public final class MindAI extends JavaPlugin {
         databaseService.init();
 
         this.violationManager = new ViolationManager(this);
+        this.mitigationManager = new MitigationManager(this);
 
         String apiKey = getConfig().getString("api-key", "");
         if (apiKey.isEmpty() || apiKey.equals("CHANGE-ME-TO-YOUR-API-KEY")) {
@@ -58,6 +66,8 @@ public final class MindAI extends JavaPlugin {
         CommandManager commandManager = new CommandManager(this);
         getCommand("mindai").setExecutor(commandManager);
         getCommand("mindai").setTabCompleter(commandManager);
+
+        getServer().getPluginManager().registerEvents(new MitigationListener(this), this);
     }
 
     private void discoverPublicIpAndValidateLicense(final String apiKey) {
@@ -145,6 +155,7 @@ public final class MindAI extends JavaPlugin {
 
     public void reloadPluginConfig() {
         reloadConfig();
+        localeManager.loadMessages();
     }
 
     public boolean toggleAlerts(UUID uuid) {
@@ -167,6 +178,8 @@ public final class MindAI extends JavaPlugin {
     public DatabaseService getDatabaseService() { return databaseService; }
     public OkHttpClient getHttpClient() { return this.httpClient; }
     public ViolationManager getViolationManager() { return this.violationManager; }
+    public LocaleManager getLocaleManager() { return this.localeManager; }
+    public MitigationManager getMitigationManager() { return mitigationManager; }
 
     private static class LazyHolder {
         private static final Moshi MOSHI = new Moshi.Builder().build();
