@@ -7,7 +7,6 @@ import org.bukkit.util.StringUtil;
 import ru.Fronzter.MindAc.MindAI;
 import ru.Fronzter.MindAc.command.SubCommand;
 import ru.Fronzter.MindAc.service.PunishmentService;
-
 import java.util.List;
 import java.util.stream.Collectors;
 

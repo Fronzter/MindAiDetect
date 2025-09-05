@@ -1,7 +1,6 @@
 package ru.Fronzter.MindAc.command.subcommands;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -22,41 +21,33 @@ public class StatsCommand extends SubCommand {
     }
 
     @Override
-    public String getName() {
-        return "stats";
-    }
-
+    public String getName() { return "stats"; }
     @Override
-    public String getDescription() {
-        return "Показать статистику нарушений игрока";
-    }
-
+    public String getDescription() { return "Показать статистику нарушений игрока"; }
     @Override
-    public String getUsage() {
-        return "/mindai stats <игрок>";
-    }
+    public String getUsage() { return "/mindai stats <игрок>"; }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage(ChatColor.WHITE + "Использование: " + getUsage());
+            sender.sendMessage(plugin.getLocaleManager().getMessage("commands.stats.usage"));
             return;
         }
         String playerName = args[0];
         @SuppressWarnings("deprecation")
         OfflinePlayer target = Bukkit.getOfflinePlayer(playerName);
-        if (!target.hasPlayedBefore()) {
-            sender.sendMessage(ChatColor.WHITE + "Игрок с ником '" + playerName + "' никогда не играл на сервере.");
+        if (!target.hasPlayedBefore() && !target.isOnline()) {
+            sender.sendMessage(plugin.getLocaleManager().getMessage("player-not-found").replace("%player%", playerName));
             return;
         }
 
-        sender.sendMessage(ChatColor.GOLD + "Загрузка статистики для " + target.getName() + "...");
+        sender.sendMessage(plugin.getLocaleManager().getMessage("commands.stats.loading").replace("%player%", target.getName()));
         plugin.getDatabaseService().getPlayerStatsAsync(target.getUniqueId(), stats -> {
-            sender.sendMessage(ChatColor.GRAY + ">><< " + ChatColor.AQUA + "Статистика для " + target.getName() + ChatColor.GRAY + " >><<");
-            sender.sendMessage(ChatColor.GOLD + "Всего нарушений в базе: " + ChatColor.WHITE + stats.getTotalViolations());
+            sender.sendMessage(plugin.getLocaleManager().getMessage("commands.stats.header").replace("%player%", target.getName()));
+            sender.sendMessage(plugin.getLocaleManager().getMessage("commands.stats.total-violations").replace("%count%", String.valueOf(stats.getTotalViolations())));
             if (stats.getTotalViolations() > 0) {
-                sender.sendMessage(ChatColor.GOLD + "Средняя вероятность: " + ChatColor.WHITE + String.format("%.2f%%", stats.getAverageProbability() * 100));
-                sender.sendMessage(ChatColor.GOLD + "Последнее нарушение: " + ChatColor.WHITE + dateFormat.format(new Date(stats.getLastViolationTimestamp())));
+                sender.sendMessage(plugin.getLocaleManager().getMessage("commands.stats.average-probability").replace("%avg_prob%", String.format("%.2f", stats.getAverageProbability() * 100)));
+                sender.sendMessage(plugin.getLocaleManager().getMessage("commands.stats.last-violation").replace("%date%", dateFormat.format(new Date(stats.getLastViolationTimestamp()))));
             }
         });
     }

@@ -1,7 +1,6 @@
 package ru.Fronzter.MindAc.command.subcommands;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,24 +22,16 @@ public class HistoryCommand extends SubCommand {
     }
 
     @Override
-    public String getName() {
-        return "history";
-    }
-
+    public String getName() { return "history"; }
     @Override
-    public String getDescription() {
-        return "Показать историю нарушений игрока";
-    }
-
+    public String getDescription() { return "Показать историю нарушений игрока"; }
     @Override
-    public String getUsage() {
-        return "/mindai history <игрок>";
-    }
+    public String getUsage() { return "/mindai history <игрок>"; }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage(ChatColor.WHITE + "Использование: " + getUsage());
+            sender.sendMessage(plugin.getLocaleManager().getMessage("commands.history.usage"));
             return;
         }
 
@@ -48,22 +39,26 @@ public class HistoryCommand extends SubCommand {
         @SuppressWarnings("deprecation")
         OfflinePlayer target = Bukkit.getOfflinePlayer(playerName);
 
-        if (!target.hasPlayedBefore()) {
-            sender.sendMessage(ChatColor.WHITE + "Игрок с ником '" + playerName + "' никогда не играл на сервере.");
+        if (!target.hasPlayedBefore() && !target.isOnline()) {
+            sender.sendMessage(plugin.getLocaleManager().getMessage("player-not-found").replace("%player%", playerName));
             return;
         }
 
-        sender.sendMessage(ChatColor.GOLD + "Загрузка истории для " + target.getName() + "...");
+        sender.sendMessage(plugin.getLocaleManager().getMessage("commands.history.loading").replace("%player%", target.getName()));
         plugin.getDatabaseService().getPlayerHistoryAsync(target.getUniqueId(), history -> {
             if (history.isEmpty()) {
-                sender.sendMessage(ChatColor.GREEN + "У игрока " + target.getName() + " нет зафиксированных нарушений.");
+                sender.sendMessage(plugin.getLocaleManager().getMessage("commands.history.no-history").replace("%player%", target.getName()));
                 return;
             }
-            sender.sendMessage(ChatColor.GRAY + ">><< " + ChatColor.AQUA + "История нарушений для " + target.getName() + ChatColor.GRAY + " <<>>");
+            sender.sendMessage(plugin.getLocaleManager().getMessage("commands.history.header").replace("%player%", target.getName()));
             for (ViolationRecord record : history) {
                 String formattedDate = dateFormat.format(new Date(record.getTimestamp()));
                 String formattedProb = String.format("%.2f%%", record.getProbability() * 100.0D);
-                sender.sendMessage(ChatColor.WHITE + formattedDate + ChatColor.GRAY + " - " + ChatColor.GOLD + formattedProb);
+                sender.sendMessage(
+                        plugin.getLocaleManager().getMessage("commands.history.entry")
+                                .replace("%date%", formattedDate)
+                                .replace("%probability%", formattedProb)
+                );
             }
         });
     }

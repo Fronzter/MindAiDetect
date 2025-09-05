@@ -1,6 +1,5 @@
 package ru.Fronzter.MindAc.command;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -8,15 +7,15 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.util.StringUtil;
 import ru.Fronzter.MindAc.MindAI;
 import ru.Fronzter.MindAc.command.subcommands.*;
-
 import java.util.*;
 
 public class CommandManager implements CommandExecutor, TabCompleter {
 
     private final Map<String, SubCommand> subCommands = new HashMap<>();
+    private final MindAI plugin;
 
     public CommandManager(MindAI plugin) {
-
+        this.plugin = plugin;
         registerSubCommand(new ReloadCommand(plugin));
         registerSubCommand(new AlertsCommand(plugin));
         registerSubCommand(new HistoryCommand(plugin));
@@ -31,7 +30,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("mindai.admin")) {
-            sender.sendMessage(ChatColor.WHITE + "У вас нет прав для использования этой команды.");
+            sender.sendMessage(plugin.getLocaleManager().getMessage("no-permission"));
             return true;
         }
 
@@ -44,7 +43,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         SubCommand subCommand = subCommands.get(subCommandName);
 
         if (subCommand == null) {
-            sender.sendMessage(ChatColor.WHITE + "Неизвестная подкоманда. Используйте /mindai для помощи.");
+            sender.sendMessage(plugin.getLocaleManager().getMessage("unknown-subcommand"));
             return true;
         }
 
@@ -55,9 +54,9 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     }
 
     private void sendHelpMessage(CommandSender sender) {
-        sender.sendMessage(ChatColor.AQUA + ">>> MindAI Помощь <<<");
+        sender.sendMessage("§b>>> MindAI Help <<<");
         for (SubCommand subCommand : subCommands.values()) {
-            sender.sendMessage(ChatColor.GOLD + subCommand.getUsage() + ChatColor.WHITE + " - " + subCommand.getDescription());
+            sender.sendMessage("&6" + subCommand.getUsage() + "&f - " + subCommand.getDescription());
         }
     }
 

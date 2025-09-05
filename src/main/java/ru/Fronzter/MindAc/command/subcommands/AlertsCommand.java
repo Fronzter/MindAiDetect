@@ -1,6 +1,5 @@
 package ru.Fronzter.MindAc.command.subcommands;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import ru.Fronzter.MindAc.MindAI;
@@ -13,32 +12,24 @@ public class AlertsCommand extends SubCommand {
     }
 
     @Override
-    public String getName() {
-        return "alerts";
-    }
-
+    public String getName() { return "alerts"; }
     @Override
-    public String getDescription() {
-        return "Включить/выключить оповещения для себя";
-    }
-
+    public String getDescription() { return "Включить/выключить оповещения для себя"; }
     @Override
-    public String getUsage() {
-        return "/mindai alerts";
-    }
+    public String getUsage() { return "/mindai alerts"; }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.WHITE + "Эту команду может использовать только игрок. (CONSOLE NEZA)");
+            sender.sendMessage(plugin.getLocaleManager().getMessage("player-only-command"));
             return;
         }
         Player player = (Player) sender;
         boolean newState = plugin.toggleAlerts(player.getUniqueId());
         if (newState) {
-            player.sendMessage(ChatColor.GREEN + "Оповещения от MindAI включены.");
+            player.sendMessage(plugin.getLocaleManager().getMessage("alerts.toggled-on"));
         } else {
-            player.sendMessage(ChatColor.RED + "Оповещения от MindAI выключены.");
+            player.sendMessage(plugin.getLocaleManager().getMessage("alerts.toggled-off"));
         }
     }
 }
